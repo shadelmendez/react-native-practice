@@ -1,25 +1,25 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import TodoList from "./components/TodoList";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import Home from "./screens/Home";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AddTodo from "./screens/AddTodo";
 
+const Stack = createNativeStackNavigator();
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <SafeAreaView>
-        <View>
-          <TodoList />
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Add" component={AddTodo} />
+        {/* <Stack.Screen
+          name="Add"
+          component={AddTodo}
+          options={{ presentation: "modal" }}
+        /> */}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
