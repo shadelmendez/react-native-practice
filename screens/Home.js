@@ -1,78 +1,59 @@
+import React, { useState } from "react";
 import {
   StyleSheet,
   Image,
   View,
   Text,
   TouchableOpacity,
-  FlatList,
+  SafeAreaView,
 } from "react-native";
 import TodoList from "../components/TodoList";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { React, useState } from "react";
-import { todosData } from "../data/todos";
 import { useNavigation } from "@react-navigation/native";
+import { useAddTodo } from "../context/TodoContextProvider";
 
 export default function Home() {
-  const [localData, setLocalData] = useState(
-    todosData.sort((a, b) => {
-      return a.isCompleted - b.isCompleted;
-    })
-  );
+  const { newTodo } = useAddTodo();
   const [isHidden, setIsHidden] = useState(false);
+  const navigation = useNavigation();
 
   const handlePress = () => {
-    if (isHidden) {
-      setIsHidden(false);
-      setLocalData(
-        todosData.sort((a, b) => {
-          return a.isCompleted - b.isCompleted;
-        })
-      );
-      return;
-    }
     setIsHidden(!isHidden);
-    setLocalData(localData.filter((todo) => !todo.isCompleted));
   };
 
-  const navigation = useNavigation();
-  return (
-    <SafeAreaProvider style={styles.container}>
-      <SafeAreaView>
-        <View>
-          <Image
-            source={{
-              uri: "https://m.media-amazon.com/images/M/MV5BMTY0OWI5NTUtY2UyOS00M2FhLWE1OWMtZGU2YzE0NzExYmJkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-            }}
-            style={styles.image}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={styles.title}>Today</Text>
-            <TouchableOpacity
-              style={{ color: "#3478f6" }}
-              onPress={handlePress}
-            >
-              <Text>{isHidden ? "Show Completed" : "Hide Completed"}</Text>
-            </TouchableOpacity>
-          </View>
-          <TodoList todosData={localData.filter((item) => item.isToday)} />
+  const filterTodos = (isToday) => {
+    return newTodo.filter(
+      (item) => item.isToday === isToday && (!isHidden || !item.isCompleted)
+    );
+  };
 
-          <Text style={styles.title}>Tomorrow</Text>
-          <TodoList todosData={todosData.filter((item) => !item.isToday)} />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Add")}
-          >
-            <Text style={styles.plus}>+</Text>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View>
+        <Image
+          source={{
+            uri: "https://m.media-amazon.com/images/M/MV5BMTY0OWI5NTUtY2UyOS00M2FhLWE1OWMtZGU2YzE0NzExYmJkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+          }}
+          style={styles.image}
+        />
+        <View style={styles.row}>
+          <Text style={styles.title}>Today</Text>
+          <TouchableOpacity onPress={handlePress}>
+            <Text>{isHidden ? "Show Completed" : "Hide Completed"}</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+        <TodoList todosData={filterTodos(true)} />
+
+        <Text style={styles.title}>Tomorrow</Text>
+        <TodoList todosData={filterTodos(false)} />
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Add")}
+        >
+          <Text style={styles.plus}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -86,6 +67,11 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     alignSelf: "flex-end",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   title: {
     fontSize: 34,
@@ -101,10 +87,7 @@ const styles = StyleSheet.create({
     bottom: 50,
     right: 20,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 5,

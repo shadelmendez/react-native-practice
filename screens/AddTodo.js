@@ -8,11 +8,15 @@ import {
   Switch,
 } from "react-native";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import { useAddTodo } from "../context/TodoContextProvider";
+import "react-native-get-random-values"; // Importa antes de uuid
+import { v4 as uuidv4 } from "uuid";
 
 function AddTodo() {
   const [name, setName] = useState("");
   const [date, setDate] = useState(new Date());
   const [isToday, setIsToday] = useState(false);
+  const { addNewTodo } = useAddTodo();
 
   const showTimePicker = () => {
     DateTimePickerAndroid.open({
@@ -25,6 +29,20 @@ function AddTodo() {
     });
   };
 
+  const setNewTodo = () => {
+    if (!name.trim()) return; // Validar que el nombre no esté vacío
+
+    const todo = {
+      id: uuidv4(), // Generar un ID único
+      name,
+      hour: date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      isToday,
+      isCompleted: false,
+    };
+
+    addNewTodo(todo);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add Task</Text>
@@ -34,9 +52,7 @@ function AddTodo() {
           style={styles.textInput}
           placeholder="Task"
           placeholderTextColor="#00000030"
-          onChangeText={(text) => {
-            setName(text);
-          }}
+          onChangeText={setName}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -52,14 +68,9 @@ function AddTodo() {
       </View>
       <View>
         <Text style={styles.inputTitle}>Today</Text>
-        <Switch
-          value={isToday}
-          onValueChange={(v) => {
-            setIsToday(v);
-          }}
-        />
+        <Switch value={isToday} onValueChange={setIsToday} />
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={setNewTodo}>
         <Text style={{ color: "#FFF" }}>Done</Text>
       </TouchableOpacity>
       <Text style={{ color: "#00000060" }}>
@@ -75,7 +86,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 30,
     flex: 1,
-    backgroundColor: "#f78fa",
+    backgroundColor: "#f8f8fa",
   },
   title: {
     fontSize: 34,
