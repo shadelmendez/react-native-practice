@@ -1,42 +1,50 @@
 import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CheckBox from "./CheckBox";
+import { useAddTodo } from "../context/TodoContextProvider";
 
-export default function Todo({ id, text, isCompleted, isToday, hour }) {
+export default function Todo({ newTodo }) {
+  const { completedTodos } = useAddTodo();
+
   return (
     <View style={styles.container}>
-      <CheckBox
-        id={id}
-        isCompleted={isCompleted}
-        isToday={isToday}
-        hour={hour}
-      />
-      <View>
-        <Text
-          style={
-            isCompleted
-              ? [
-                  styles.text,
-                  { textDecorationLine: "line-through", color: "#73737330" },
-                ]
-              : styles.text
-          }
-        >
-          {text}
-        </Text>
-        <Text
-          style={
-            isCompleted
-              ? [
-                  styles.time,
-                  { textDecorationLine: "line-through", color: "#73737330" },
-                ]
-              : styles.time
-          }
-        >
-          {hour}
-        </Text>
-      </View>
+      {newTodo?.map((t, index) => (
+        <View key={index} style={styles.container}>
+          <CheckBox id={index} isToday={t.isToday} hour={t.hour} />
+          <View>
+            <Text
+              style={
+                completedTodos.has(index) && t.isToday
+                  ? [
+                      styles.text,
+                      {
+                        textDecorationLine: "line-through",
+                        color: "#73737330",
+                      },
+                    ]
+                  : styles.text
+              }
+            >
+              {t.name}
+            </Text>
+            <Text
+              style={
+                completedTodos.has(index) && t.isToday
+                  ? [
+                      styles.time,
+                      {
+                        textDecorationLine: "line-through",
+                        color: "#73737330",
+                      },
+                    ]
+                  : styles.time
+              }
+            >
+              {t.hour}
+            </Text>
+          </View>
+        </View>
+      ))}
     </View>
   );
 }

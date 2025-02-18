@@ -1,12 +1,21 @@
 import * as React from "react";
 import { StyleSheet, View, Pressable } from "react-native";
 import { Entypo } from "@expo/vector-icons";
-function CheckBox({ id, text, isCompleted, isToday, hour }) {
+import { useAddTodo } from "../context/TodoContextProvider";
+
+function CheckBox({ id, isToday, hour }) {
+  const { completedTodos, toggleCompleted } = useAddTodo();
+  // se estan seleccionando todos los todos completados por alguna razon :/
   return isToday ? (
     <Pressable
-      style={({ pressed }) => [isCompleted ? styles.checked : styles.unchecked]}
+      style={({ pressed }) => [
+        completedTodos.has(id) ? styles.checked : styles.unchecked,
+      ]}
+      onPress={() => toggleCompleted(id)}
     >
-      {isCompleted && <Entypo name="check" size={16} color="#FAFAFA" />}
+      {completedTodos.has(id) && (
+        <Entypo name="check" size={16} color="#FAFAFA" />
+      )}
     </Pressable>
   ) : (
     <View style={styles.isToday} />
