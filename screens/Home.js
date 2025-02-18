@@ -1,26 +1,31 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
-  Image,
   View,
   Text,
   TouchableOpacity,
   SafeAreaView,
+  Modal,
+  Pressable
 } from "react-native";
 import TodoList from "../components/TodoList";
 import { useNavigation } from "@react-navigation/native";
 import { useAddTodo } from "../context/TodoContextProvider";
+import Entypo from '@expo/vector-icons/Entypo';
 
 export default function Home() {
   const { newTodo } = useAddTodo();
   const [isHidden, setIsHidden] = useState(false);
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+
 
   const handlePress = () => {
     setIsHidden(!isHidden);
   };
 
   const filterTodos = (isToday) => {
+    newTodo.filter((fua)=>console.log("fua ", fua))
     return newTodo.filter(
       (item) => item.isToday === isToday && (!isHidden || !item.isCompleted)
     );
@@ -28,13 +33,9 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <Image
-          source={{
-            uri: "https://m.media-amazon.com/images/M/MV5BMTY0OWI5NTUtY2UyOS00M2FhLWE1OWMtZGU2YzE0NzExYmJkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-          }}
-          style={styles.image}
-        />
+      <View style={styles.main}>
+
+        <View>
         <View style={styles.row}>
           <Text style={styles.title}>Today</Text>
           <TouchableOpacity onPress={handlePress}>
@@ -42,17 +43,54 @@ export default function Home() {
           </TouchableOpacity>
         </View>
         <TodoList todosData={filterTodos(true)} />
+        </View>
 
+        <View>
         <Text style={styles.title}>Tomorrow</Text>
         <TodoList todosData={filterTodos(false)} />
 
-        <TouchableOpacity
+        </View>
+
+   
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Hello World!</Text>
+               <Pressable
+                style={[styles.buttonModal, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Done</Text>
+              </Pressable> 
+            </View>
+          </View>
+        </Modal>
+    
+
+       <View style={{display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: "row", marginBottom: 30}}>
+       <TouchableOpacity
+          style={styles.button}
+          onPress={() => setModalVisible(true)}
+        >
+          <Entypo name="pencil" size={24} color="white" />
+        </TouchableOpacity>
+       
+       <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("Add")}
         >
           <Text style={styles.plus}>+</Text>
         </TouchableOpacity>
+       </View>
+
       </View>
+
     </SafeAreaView>
   );
 }
@@ -61,12 +99,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 21,
-  },
-  image: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignSelf: "flex-end",
+    paddingVertical: 21
   },
   row: {
     flexDirection: "row",
@@ -79,24 +112,57 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   button: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 60,
+    height: 60,
+    borderRadius: 35,
     backgroundColor: "#000",
-    position: "absolute",
-    bottom: 50,
-    right: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 5,
+    alignItems: "center",
+    justifyContent: "center",
   },
+  
   plus: {
-    fontSize: 40,
+    fontSize: 35,
     color: "#fff",
-    position: "absolute",
-    top: -6,
-    left: 9,
+  },
+  main:{
+    flex: 1,
+    justifyContent: "space-between"
+  },
+
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonModal: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

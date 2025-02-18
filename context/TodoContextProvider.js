@@ -5,6 +5,7 @@ const AddTodoContext = createContext();
 export const TodoContextProvider = ({ children }) => {
   const [newTodo, setNewTodo] = useState([]);
   const [completedTodos, setCompletedTodos] = useState(new Set());
+  const [completed, setCompleted]=useState([])
 
   const addNewTodo = (todo) => {
     const exists = newTodo.some(
@@ -13,12 +14,16 @@ export const TodoContextProvider = ({ children }) => {
     );
     if (!exists) {
       setNewTodo((prevTodos) => [...prevTodos, todo]);
-    } else {
-      console.log("Todo duplicado, no se agrega:", todo);
     }
   };
 
   const toggleCompleted = (id) => {
+    setNewTodo((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+      )
+    );
+  
     setCompletedTodos((prev) => {
       const updated = new Set(prev);
       if (updated.has(id)) {
@@ -29,6 +34,7 @@ export const TodoContextProvider = ({ children }) => {
       return new Set(updated);
     });
   };
+  
 
   return (
     <AddTodoContext.Provider

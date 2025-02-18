@@ -10,11 +10,11 @@ export default function Todo({ newTodo }) {
     <View style={styles.container}>
       {newTodo?.map((t, index) => (
         <View key={index} style={styles.container}>
-          <CheckBox id={index} isToday={t.isToday} hour={t.hour} />
+          <CheckBox id={t.id} isToday={t.isToday} hour={t.hour} isCompleted= {t.isCompleted} />
           <View>
             <Text
               style={
-                completedTodos.has(index) && t.isToday
+                completedTodos.has(t.id) && t.isToday
                   ? [
                       styles.text,
                       {
@@ -29,7 +29,7 @@ export default function Todo({ newTodo }) {
             </Text>
             <Text
               style={
-                completedTodos.has(index) && t.isToday
+                completedTodos.has(t.id) && t.isToday
                   ? [
                       styles.time,
                       {
